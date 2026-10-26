@@ -1,0 +1,20 @@
+const {chromium}=require('C:/Users/omars/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const assert=require('node:assert/strict');
+(async()=>{
+ const browser=await chromium.launch({headless:true,channel:'msedge'});
+ const page=await browser.newPage({viewport:{width:1440,height:1050}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto((process.env.TEST_URL||'http://127.0.0.1:5082')+'/?demo=1');await page.locator('#app').waitFor({state:'visible'});
+ await page.screenshot({path:'tests/desktop.png',fullPage:true});
+ await page.locator('[data-nav="people"]').click();await page.fill('#person-name','Test Person');await page.fill('#person-relation','Friend');await page.locator('#person-form button.primary').click();await page.getByRole('heading',{name:'Test Person',exact:true}).waitFor();
+ assert.equal(await page.locator('#person-id').inputValue(),'');await page.fill('#person-name','Second Person');await page.locator('#person-form button.primary').click();await page.getByRole('heading',{name:'Second Person',exact:true}).waitFor();await page.getByRole('heading',{name:'Test Person',exact:true}).waitFor();
+ await page.locator('#face-toggle').check();assert(await page.locator('#face-toggle').isChecked());
+ await page.locator('[data-nav="home"]').click();await page.locator('#capture').click();await page.locator('#snapshot-enroll').waitFor({state:'visible'});await page.selectOption('#snapshot-person',{label:'Test Person'});await page.locator('#snapshot-enroll button').click();await page.locator('[data-nav="people"]').click();assert.match(await page.locator('#people-list').textContent(),/Test Person/);
+ await page.locator('[data-nav="voices"]').click();await page.evaluate(()=>preview(new Blob(['test audio'],{type:'audio/wav'})));await page.locator('#send-voice').click();await page.locator('[data-replay]').first().click();await page.locator('[data-listen]').first().click();await page.locator('#history-player').waitFor({state:'visible'});
+ await page.locator('[data-nav="reminders"]').click();await page.fill('#reminder-text','Browser test reminder');await page.locator('#reminder-form button').click();await page.getByRole('heading',{name:'Browser test reminder'}).waitFor();
+ await page.locator('[data-nav="settings"]').click();await page.selectOption('#setting-theme','dark');await page.selectOption('#setting-language','ar');await page.locator('#settings-form button').click();await page.waitForFunction(()=>document.documentElement.dir==='rtl'&&document.body.classList.contains('dark'));
+ await page.selectOption('#setting-face-model','dlib');await page.locator('#setting-scene').uncheck();await page.locator('#settings-form button').click();await page.waitForFunction(()=>document.querySelector('#setting-face-model').value==='dlib'&&!document.querySelector('#setting-scene').checked);
+ assert.equal(await page.locator('#ampm option[value="PM"]').textContent(),'مساءً');assert.equal(await page.locator('#ampm').evaluate(el=>{el.value='PM';return el.value}),'PM');
+ await page.selectOption('#setting-language','en');await page.locator('#settings-form button').click();await page.waitForFunction(()=>document.documentElement.dir==='ltr');
+ await page.setViewportSize({width:390,height:844});await page.locator('[data-nav="home"]').click();assert(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));await page.screenshot({path:'tests/mobile.png',fullPage:true});
+ assert.deepEqual(errors,[]);await browser.close();console.log('PASS: desktop/mobile layout, person creation, face toggle, reminder, dark theme, Arabic RTL, English restore; no JS errors');
+})().catch(e=>{console.error(e);process.exit(1)});

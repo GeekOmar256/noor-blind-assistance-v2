@@ -1,0 +1,4 @@
+{
+  "functions": [{"source":"functions","codebase":"blind-assistance-v2","runtime":"python311","ignore":["venv",".venv","__pycache__","*.pyc",".git","firebase-debug.log"]}],
+  "hosting": {"site":"alzheimer-noor","public":"hosting","rewrites":[{"source":"**","function":{"functionId":"caregiver","region":"europe-west1"}}]}
+}

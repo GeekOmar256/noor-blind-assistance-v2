@@ -1,0 +1,4 @@
+firebase-functions>=0.4,<1
+firebase-admin>=6.6,<8
+Flask>=3,<4
+Pillow>=10.4,<13

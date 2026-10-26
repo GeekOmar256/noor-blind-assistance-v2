@@ -1,0 +1,11 @@
+{
+  "apiBase": "https://YOUR-SITE.web.app",
+  "firebaseApiKey": "YOUR_FIREBASE_WEB_API_KEY",
+  "deviceId": "blind-pi",
+  "deviceEmail": "pi-device@example.com",
+  "devicePassword": "SET_A_UNIQUE_DEVICE_PASSWORD",
+  "camera": "auto",
+  "rotate": 0,
+  "model": "gpt-4o-mini",
+  "faceThreshold": 0.45
+}

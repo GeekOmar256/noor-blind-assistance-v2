@@ -1,0 +1,13 @@
+.venv/
+venv/
+__pycache__/
+.env*
+!.env.example
+*service-account*.json
+pi/config.json
+pi/data/
+pi/models/*.onnx
+firebase-debug.log
+LOCAL_ACCESS.txt
+.firebase/
+esp32cam_stream/wifi_config.h
