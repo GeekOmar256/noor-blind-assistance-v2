@@ -4,8 +4,8 @@ This is the separate Noor v2 source repository. The Pi upload helper transfers o
 
 ## Caregiver app
 
-- Site: https://alzheimer-noor.web.app
-- Interface preview: https://alzheimer-noor.web.app/?demo=1 (sample data only)
+- Site: https://noor-blind-assistance.web.app
+- Interface preview: https://noor-blind-assistance.web.app/?demo=1 (sample data only)
 - Account: `cargiver@gmail.com` (spelling supplied by the user).
 - Device ID: `blind-pi`.
 - Initial password, when this account is newly created, is in the private `LOCAL_ACCESS.txt`. Do not commit or share that file.

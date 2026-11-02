@@ -33,10 +33,10 @@ def main():
         else: auth.update_user(device.uid,password=device_password)
     except auth.UserNotFoundError:device=auth.create_user(email=device_email,password=device_password)
     firestore.client().collection('noor_devices').document('blind-pi').set({'ownerUid':owner.uid,'deviceUid':device.uid},merge=True)
-    config={'apiBase':'https://alzheimer-noor.web.app','firebaseApiKey':api_key,'deviceId':'blind-pi','deviceEmail':device_email,'devicePassword':device_password,'camera':'auto','rotate':0,'model':'gpt-4o-mini','faceThreshold':.45}
+    config={'apiBase':'https://noor-blind-assistance.web.app','firebaseApiKey':api_key,'deviceId':'blind-pi','deviceEmail':device_email,'devicePassword':device_password,'camera':'auto','rotate':0,'model':'gpt-4o-mini','faceThreshold':.45}
     (BASE/'pi/config.json').write_text(json.dumps(config,indent=2))
     if password:
-        (BASE/'LOCAL_ACCESS.txt').write_text('Noor caregiver access\nURL: https://alzheimer-noor.web.app\nEmail: '+email+'\nInitial password: '+password+'\nDevice ID: blind-pi\nKeep this file private. Use a password reset to set your own password.\n')
+        (BASE/'LOCAL_ACCESS.txt').write_text('Noor caregiver access\nURL: https://noor-blind-assistance.web.app\nEmail: '+email+'\nInitial password: '+password+'\nDevice ID: blind-pi\nKeep this file private. Use a password reset to set your own password.\n')
     else:
         print('Caregiver already exists; its password was preserved.')
     print('Caregiver paired and private Pi config written. New-account login is in LOCAL_ACCESS.txt, if created.')

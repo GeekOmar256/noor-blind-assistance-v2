@@ -7,7 +7,7 @@
 - Service: `systemctl --user status noor`
 - Startup: `/home/abc/.config/autostart/noor.desktop`, validated with `desktop-file-validate`
 - Timezone: `Asia/Kuwait`; system clock synchronization enabled
-- Caregiver app: https://alzheimer-noor.web.app
+- Caregiver app: https://noor-blind-assistance.web.app
 
 Installed the native Pi dependencies and an isolated Python virtual environment. Both ONNX models match the workstation SHA-256 hashes and load successfully on the Pi. The application authenticates using its paired device account. Secret configuration files have mode `600`.
 
