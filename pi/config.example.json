@@ -5,6 +5,7 @@
   "deviceEmail": "pi-device@example.com",
   "devicePassword": "SET_A_UNIQUE_DEVICE_PASSWORD",
   "camera": "auto",
+  "gpioButton": 14,
   "rotate": 0,
   "model": "gpt-4o-mini",
   "faceThreshold": 0.45

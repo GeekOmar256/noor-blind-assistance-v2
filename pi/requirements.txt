@@ -8,3 +8,5 @@ opencv-python-headless>=4.10,<5
 arabic-reshaper>=3,<4
 python-bidi>=0.6,<1
 tzdata>=2024.1
+gpiozero>=2,<3; sys_platform == "linux"
+lgpio>=0.2,<1; sys_platform == "linux"
