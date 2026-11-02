@@ -21,10 +21,10 @@ def main():
     def login(email,password):
         r=requests.post('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword',params={'key':key},json={'email':email,'password':password,'returnSecureToken':True},timeout=20);r.raise_for_status();return r.json()['idToken']
     tokens={'caregiver':login('cargiver@gmail.com',password),'device':login(config['deviceEmail'],config['devicePassword'])}
-    def call(path,data=None,role='caregiver',method=None,device='blind-pi'):
+    def call(path,data=None,role='caregiver',method=None,device='blind-pi-2'):
         r=requests.request(method or ('GET' if data is None else 'POST'),url+'/api/'+path,headers={'Authorization':'Bearer '+tokens[role],'X-Device-ID':device},json=data,timeout=45);return r
     firebase_admin.initialize_app(Workstation(),options={'projectId':PROJECT,'storageBucket':'alzheimer-noor-private'})
-    ref=firestore.client().collection('noor_devices').document('blind-pi');created=[];media=[]
+    ref=firestore.client().collection('noor_devices').document('blind-pi-2');created=[];media=[]
     try:
         r=call('state');r.raise_for_status();assert r.json()['role']=='caregiver'
         assert call('state',device='another-device').status_code==403

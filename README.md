@@ -7,7 +7,7 @@ This is the separate Noor v2 source repository. The Pi upload helper transfers o
 - Site: https://noor-blind-assistance.web.app
 - Interface preview: https://noor-blind-assistance.web.app/?demo=1 (sample data only)
 - Account: `cargiver@gmail.com` (spelling supplied by the user).
-- Device ID: `blind-pi`.
+- Device ID: `blind-pi-2`.
 - Initial password, when this account is newly created, is in the private `LOCAL_ACCESS.txt`. Do not commit or share that file.
 - Keep the paired `pi/config.json` and `pi/.env` privately on the Pi. They are not included in this repository or in code updates.
 - Firebase Hosting forwards to the Python `caregiver` Cloud Function in `europe-west1`.

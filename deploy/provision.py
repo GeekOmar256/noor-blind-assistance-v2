@@ -8,7 +8,7 @@ import firebase_admin
 from firebase_admin import auth, firestore
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--project',required=True);parser.add_argument('--caregiver-email',required=True);parser.add_argument('--device-id',default='blind-pi');parser.add_argument('--api-base',required=True);parser.add_argument('--web-api-key',required=True);args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--project',required=True);parser.add_argument('--caregiver-email',required=True);parser.add_argument('--device-id',default='blind-pi-2');parser.add_argument('--api-base',required=True);parser.add_argument('--web-api-key',required=True);args=parser.parse_args()
     firebase_admin.initialize_app(options={'projectId':args.project})
     try:owner=auth.get_user_by_email(args.caregiver_email)
     except auth.UserNotFoundError:
