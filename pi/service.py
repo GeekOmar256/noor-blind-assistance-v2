@@ -31,7 +31,7 @@ class Service:
         self.recognizers={'sface':Recognizer(models,config.get('faceThreshold',.45)),
                           'dlib':DlibRecognizer(models,config.get('dlibThreshold',.55))}
         self.frame=None; self.frame_at=0; self.camera=None; self.camera_ok=False; self.cloud_ok=False
-        self.message='Connecting to your camera…'; self.description='Ready to help.'; self.busy=False; self.training='Not trained yet'; self.ui_visible=True; self.button_state=None; self.pi_button=None
+        self.message='Connecting to your camera…'; self.description='Ready to help.'; self.busy=False; self.training='Not trained yet'; self.ui_visible=True; self.pi_button=None
         self.jobs=queue.Queue(); self.queued=set(); self.acks={}
         self.audio_cache=self.folder/'audio'; self.audio_cache.mkdir(exist_ok=True)
         # A reminder is persisted as "playing" before playback to avoid replay after restart.
@@ -50,7 +50,7 @@ class Service:
     def update_setting(self,key,value):
         with self.lock: self.state.setdefault('settings',{})[key]=value
     def start(self):
-        for target in [self.camera_loop,self.button_loop,self.pi_button_loop,self.sync_loop,self.job_loop,self.reminder_loop,self.prefetch_loop]: threading.Thread(target=target,daemon=True).start()
+        for target in [self.camera_loop,self.pi_button_loop,self.sync_loop,self.job_loop,self.reminder_loop,self.prefetch_loop]: threading.Thread(target=target,daemon=True).start()
     def capture(self):
         # A request always obtains a new capture, never an old stream frame.
         url=self.camera or self.config.get('camera','auto')
@@ -82,15 +82,6 @@ class Service:
             except Exception:
                 with self.lock: self.camera_ok=False; self.message=f'Camera disconnected · reconnecting in {delay}s'
                 self.camera=None; self.stop.wait(delay); delay=min(delay*2,15)
-    def button_loop(self):
-        while not self.stop.wait(.4):
-            if not self.camera: continue
-            try:
-                host=urlsplit(self.camera)
-                r=requests.get(f'{host.scheme}://{host.netloc}/button',timeout=(2,2)); r.raise_for_status(); value=r.json()
-                current=(value['boot_id'],value['press_count']); previous=self.button_state; self.button_state=current
-                if previous and previous[0]==current[0] and current[1]>previous[1] and self.settings().get('sceneDescription',True): self.enqueue('local-'+str(time.time_ns()),{'type':'objects'},'local')
-            except Exception: self.stop.wait(2)
     def pi_button_loop(self):
         pin=self.config.get('gpioButton',14)
         if pin is None: return

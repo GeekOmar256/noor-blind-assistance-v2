@@ -55,8 +55,12 @@ def main():
     description=tk.Text(left,height=4,wrap='word',relief='flat',padx=12,pady=10,font=('Arial',16)); description.pack(fill='x',pady=(10,0)); description.configure(state='disabled')
     right=tk.Frame(layout,padx=14,pady=14);right.grid(row=0,column=1,sticky='nsew')
     label(right,'ready','Your everyday companion','رفيقك كل يوم',font=('Arial',12,'bold'),wraplength=195).pack(anchor='w',pady=(0,12))
-    def analyse(): service.enqueue('local-'+str(time.time()),{'type':'analyse'},'local')
-    analyse_button=tk.Button(right,command=analyse,relief='flat',bd=0,pady=14,font=('Arial',16,'bold'));analyse_button.pack(fill='x',pady=(0,15));text_widgets.append((analyse_button,'analyse','✦ Describe the scene','✦ وصف المشهد'))
+    def request_recognition(kind): service.enqueue('local-'+str(time.time_ns()),{'type':kind},'local')
+    actions=tk.Frame(right);actions.pack(fill='x',pady=(0,10))
+    analyse_button=tk.Button(actions,command=lambda:request_recognition('objects'),relief='flat',bd=0,pady=10,font=('Arial',13,'bold'),wraplength=90)
+    analyse_button.pack(side='left',fill='both',expand=True,padx=(0,4));text_widgets.append((analyse_button,'analyse','✦ Objects','✦ الأشياء'))
+    recognize_button=tk.Button(actions,command=lambda:request_recognition('faces'),relief='flat',bd=0,pady=10,font=('Arial',13,'bold'),wraplength=90)
+    recognize_button.pack(side='left',fill='both',expand=True,padx=(4,0));text_widgets.append((recognize_button,'recognize','◉ Faces','◉ الوجوه'))
     def save(key,value):
         service.update_setting(key,value)
         def worker():
@@ -75,9 +79,9 @@ def main():
         zoom_percent.set(f'{round(zoom.get()*100)}%')
         frame_ref[0]=None  # Re-render the current live frame at the new zoom.
         description.configure(font=('Arial',int(16*zoom.get())))
-        analyse_button.configure(font=('Arial',int(16*zoom.get()),'bold'))
+        for button in (analyse_button,recognize_button):button.configure(font=('Arial',int(13*zoom.get()),'bold'))
         for w,key,en,ar in text_widgets:
-            if w!=analyse_button:w.configure(font=('Arial',int(12*zoom.get())))
+            if w not in (analyse_button,recognize_button):w.configure(font=('Arial',int(12*zoom.get())))
     def paint(theme):
         dark=theme=='dark'; bg='#171826' if dark else '#f4f3fb'; card='#27283b' if dark else '#ffffff'; fg='#f2efff' if dark else '#302b46'; accent='#8b75f5' if dark else '#6956df'
         root.configure(bg=bg)
@@ -87,7 +91,7 @@ def main():
                 if isinstance(w,(tk.Label,tk.Checkbutton,tk.Button)):w.configure(fg=fg)
                 if isinstance(w,tk.Checkbutton):w.configure(selectcolor=card,activebackground=card,activeforeground=fg)
             for child in w.winfo_children():recurse(child)
-        recurse(outer);brand.configure(fg=accent);analyse_button.configure(bg=accent,fg='white',activebackground=accent,activeforeground='white');description.configure(bg=card,fg=fg,insertbackground=fg)
+        recurse(outer);brand.configure(fg=accent);analyse_button.configure(bg=accent,fg='white',activebackground=accent,activeforeground='white');recognize_button.configure(bg='#cf718f' if dark else '#dc6d87',fg='white',activebackground='#cf718f' if dark else '#dc6d87',activeforeground='white');description.configure(bg=card,fg=fg,insertbackground=fg)
     def hide():
         save('uiVisible',False);root.withdraw();visible[0]=False;service.ui_visible=False
     root.protocol('WM_DELETE_WINDOW',hide)
@@ -119,7 +123,7 @@ def main():
             language_seen[0]=lang;last_desc[0]=None
         if not language_box.instate(['focus']):language.set(lang)
         if not voice_box.instate(['focus']):voice.set(settings.get('voice','marin'))
-        face.set(settings.get('faceRecognition',False));scene.set(settings.get('sceneDescription',True));speech.set(settings.get('speech',True));analyse_button.configure(state='disabled' if service.busy or not scene.get() else 'normal')
+        face.set(settings.get('faceRecognition',False));scene.set(settings.get('sceneDescription',True));speech.set(settings.get('speech',True));analyse_button.configure(state='disabled' if service.busy or not scene.get() else 'normal');recognize_button.configure(state='disabled' if service.busy or not face.get() else 'normal')
         clock.set(datetime.now(ZoneInfo('Asia/Kuwait')).strftime('%I:%M %p'))
         status.set(display(('● Camera online' if service.camera_ok else '○ Camera reconnecting')+'  ·  '+('Cloud connected' if service.cloud_ok else 'Cloud offline')+'  ·  '+service.message[:100]))
         if service.description!=last_desc[0]:

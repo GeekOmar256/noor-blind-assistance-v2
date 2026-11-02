@@ -8,33 +8,7 @@
 
 const char* CAMERA_HOSTNAME = "blindcam";
 bool mdnsStarted = false;
-// External normally-open button: GPIO13 -> button -> GND. No SD card use.
-const int BUTTON_GPIO = 13;
-volatile uint32_t buttonPresses = 0;
-uint32_t bootId;
-int lastButtonReading = HIGH;
-int stableButtonState = HIGH;
-unsigned long lastButtonChange = 0;
 unsigned long lastReconnect = 0;
-
-void pollButton() {
-  int reading = digitalRead(BUTTON_GPIO);
-  if (reading != lastButtonReading) lastButtonChange = millis();
-  if (millis() - lastButtonChange >= 50 && reading != stableButtonState) {
-    stableButtonState = reading;
-    if (reading == LOW) ++buttonPresses;
-  }
-  lastButtonReading = reading;
-}
-
-static esp_err_t button_handler(httpd_req_t *req) {
-  char body[100];
-  snprintf(body, sizeof(body), "{\"boot_id\":%u,\"press_count\":%u}",
-           (unsigned)bootId, (unsigned)buttonPresses);
-  httpd_resp_set_type(req, "application/json");
-  httpd_resp_set_hdr(req, "Cache-Control", "no-store");
-  return httpd_resp_send(req, body, HTTPD_RESP_USE_STRLEN);
-}
 
 void startDiscovery() {
   MDNS.end();
@@ -119,9 +93,6 @@ void startServers() {
   httpd_uri_t capture_uri = { .uri = "/capture", .method = HTTP_GET, .handler = capture_handler, .user_ctx = NULL };
   if (httpd_start(&capture_httpd, &config) == ESP_OK) {
     httpd_register_uri_handler(capture_httpd, &capture_uri);
-    httpd_uri_t button_uri = { .uri = "/button", .method = HTTP_GET,
-                              .handler = button_handler, .user_ctx = NULL };
-    httpd_register_uri_handler(capture_httpd, &button_uri);
   }
 
   config.server_port = 81;
@@ -135,8 +106,6 @@ void startServers() {
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
   Serial.begin(115200);
-  pinMode(BUTTON_GPIO, INPUT_PULLUP);
-  bootId = esp_random();
 
   camera_config_t config = {};
   config.ledc_channel = LEDC_CHANNEL_0;
@@ -203,7 +172,6 @@ void setup() {
 }
 
 void loop() {
-  pollButton();
   if (WiFi.status() != WL_CONNECTED) {
     if (mdnsStarted) MDNS.end();
     mdnsStarted = false;

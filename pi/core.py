@@ -427,7 +427,7 @@ def main() -> int:
                 run_tk(args)
             else:
                 if args.gpio_button is not None:
-                    parser.error("Flask uses the ESP GPIO13 button; --gpio-button needs --tkinter")
+                    parser.error("The legacy web GUI does not support Pi GPIO; use the current app.py interface")
                 from web_gui import run_web
                 run_web(args)
         return 0
