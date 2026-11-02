@@ -55,7 +55,7 @@ class Service:
         # A request always obtains a new capture, never an old stream frame.
         url=self.camera or self.config.get('camera','auto')
         if url=='auto': url=core.discover_camera()
-        return core.capture(url,self.config.get('rotate',0))
+        return core.capture(url,self.settings().get('cameraRotation',self.config.get('rotate',0)))
     def camera_loop(self):
         delay=1
         while not self.stop.is_set():
@@ -72,7 +72,8 @@ class Service:
                             if start<0 or end<0: break
                             raw=buffer[start:end+2]; buffer=buffer[end+2:]
                             image=Image.open(io.BytesIO(raw)); image.verify()
-                            if self.config.get('rotate',0): raw=core.prepare_image(raw,self.config['rotate'])
+                            rotation=self.settings().get('cameraRotation',self.config.get('rotate',0))
+                            if rotation: raw=core.prepare_image(raw,rotation)
                             with self.lock:
                                 if not self.camera_ok and not self.busy:self.message='Camera connected · ready to help'
                                 self.frame=raw; self.frame_at=time.time(); self.camera_ok=True

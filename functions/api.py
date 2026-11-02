@@ -16,7 +16,8 @@ def now():
 
 def defaults():
     return dict(language='ar', voice='marin', speech=True, faceRecognition=False,
-                faceModel='sface', sceneDescription=True, theme='light', uiVisible=True)
+                faceModel='sface', sceneDescription=True, theme='light', uiVisible=True,
+                cameraRotation=0)
 
 def root():
     device = request.headers.get('X-Device-ID', '')
@@ -78,6 +79,7 @@ def settings():
         if key == 'language' and value not in ['ar','en']: raise ValueError('Invalid language')
         if key == 'voice' and value not in VOICES: raise ValueError('Invalid voice')
         if key == 'theme' and value not in ['light','dark']: raise ValueError('Invalid theme')
+        if key == 'cameraRotation' and (type(value) is not int or value not in [0,90,180,270]): raise ValueError('Invalid camera rotation')
     ref.set({'settings': data}, merge=True)
     return jsonify(ok=True)
 

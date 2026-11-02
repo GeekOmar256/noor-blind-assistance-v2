@@ -9,7 +9,13 @@ Object.assign(ar,{
   'Listen again here or replay a note through the Pi speaker.':'استمع إليها هنا مجدداً أو أعد تشغيلها من سماعة الجهاز.',
   'Recognition model':'نموذج التعرف',
   'Changing models rebuilds the gallery on the Pi. dlib needs its additional model files installed.':'سيعيد الجهاز بناء معرض الوجوه عند تغيير النموذج. يتطلب dlib تثبيت ملفاته الإضافية.',
-  'Scene description':'وصف المشهد'
+  'Scene description':'وصف المشهد',
+  'Camera rotation':'تدوير الكاميرا',
+  'Rotates the Pi live view and new photos used for recognition. Take a new photo to see the change here.':'يدوّر العرض المباشر على الجهاز والصور الجديدة المستخدمة للتعرف. التقط صورة جديدة لرؤية التغيير هنا.',
+  '0° · Upright':'0° · الوضع الطبيعي',
+  '90° · Clockwise':'90° · مع عقارب الساعة',
+  '180° · Upside down':'180° · مقلوبة',
+  '270° · Clockwise':'270° · مع عقارب الساعة'
 });
 let historyURL=null;
 const renderBeforeEnhancements=render;
@@ -19,6 +25,7 @@ render=function(){
     $('setting-face').checked=state.settings.faceRecognition??false;
     $('setting-scene').checked=state.settings.sceneDescription??true;
     $('setting-face-model').value=state.settings.faceModel||'sface';
+    $('setting-camera-rotation').value=String(state.settings.cameraRotation??0);
   }
   const model=state.settings.faceModel||'sface';
   $('model-readiness').textContent=model==='dlib'&&!state.status?.modelsAvailable?.dlib?
@@ -75,7 +82,8 @@ $('settings-form').onsubmit=safe(async e=>{
     theme:$('setting-theme').value,language:$('setting-language').value,
     voice:$('setting-voice').value,speech:$('setting-speech').checked,
     faceRecognition:$('setting-face').checked,faceModel:nextModel,
-    sceneDescription:$('setting-scene').checked
+    sceneDescription:$('setting-scene').checked,
+    cameraRotation:Number($('setting-camera-rotation').value)
   });
   settingsDirty=false;
   if(nextModel!==oldModel&&state.persons.some(p=>(p.images||[]).length)&&
